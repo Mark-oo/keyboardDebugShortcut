@@ -114,14 +114,18 @@ async function isLaravelProject(): Promise<boolean> {
 
         );
     } catch (err) {
-        if (err instanceof SyntaxError) {
-            vscode.window.showWarningMessage(
-                "The composer.json file is malformed and could not be parsed. Assuming this is not a Laravel project."
-            );
-        } else {
-            vscode.window.showErrorMessage(
-                `Error reading composer.json, yes I need to read that file`
-            );
+        const activeEditor = vscode.window.activeTextEditor;
+
+        if (activeEditor && activeEditor.document.languageId === "php") {
+            if (err instanceof SyntaxError) {
+                vscode.window.showWarningMessage(
+                    "The composer.json file is malformed and could not be parsed. Assuming this is not a project using a PHP framework."
+                );
+            } else {
+                vscode.window.showErrorMessage(
+                    `Error reading composer.json, yes I need to read that file`
+                );
+            }
         }
         return false;
     }
